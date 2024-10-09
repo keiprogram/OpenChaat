@@ -237,6 +237,7 @@ def main():
         st.subheader("オープンチャット画面")
         display_chat(conn)  # Display the chat section
 
+    # コネクションを閉じる
     conn.close()
 
 if __name__ == '__main__':
