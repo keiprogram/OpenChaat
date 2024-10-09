@@ -146,7 +146,7 @@ def main():
         st.subheader("ホーム画面です")
         if 'username' in st.session_state:
             username = st.session_state['username']
-            st.write(f"ようこそ、{username}さん！")
+            st.write(f"ようこそ、{username}さん。コンテンツを利用可能です")
 
             # クラスや学年の入力フォーム
             class_grade = get_class_data(conn, username)  # データベースからクラスを取得
@@ -234,7 +234,6 @@ def main():
                     st.error(f"アカウントの作成に失敗しました: {e}")
 
     elif choice == "オープンチャット":
-        st.subheader("オープンチャット画面")
         display_chat(conn)  # Display the chat section
 
     # コネクションを閉じる
