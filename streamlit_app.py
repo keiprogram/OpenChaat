@@ -121,7 +121,7 @@ def display_chat(conn):
             if message_input:
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 save_chat_message(conn, st.session_state['username'], message_input, timestamp)
-                st.experimental_set_query_params(rerun=True)  # Force a rerun by setting query params
+                st.experimental_rerun()  # Refresh the app to display the new message
             else:
                 st.warning("メッセージを入力してください。")
     else:
@@ -188,4 +188,57 @@ def main():
                 elif plot_type == 'スコア':
                     ax.plot(df['Date'], df['Score'], marker='o', color='orange')
                     ax.set_title('日別スコアの推移')
-                    ax.set_xlabel
+                    ax.set_xlabel('日付')
+                    ax.set_ylabel('スコア')
+                st.pyplot(fig)
+
+            else:
+                st.write('データがまだ入力されていません。')
+
+        else:
+            st.warning("ログインしていません。")
+
+    elif choice == "ログイン":
+        st.subheader("ログイン画面です")
+        username = st.sidebar.text_input("ユーザー名を入力してください")
+        password = st.sidebar.text_input("パスワードを入力してください", type='password')
+
+        if st.sidebar.checkbox("ログイン"):
+            result = login_user(conn, username, make_hashes(password))
+            if result:
+                st.session_state['username'] = username
+                st.success(f"{username}さんでログインしました")
+
+                if username == "さとうはお":
+                    st.success("こんにちは、佐藤葉緒さん！")
+                    if st.button("すべてのユーザーのデータを削除"):
+                        delete_all_users(conn)
+                        st.success("すべてのユーザーのデータが削除されました。")
+            else:
+                st.warning("ユーザー名かパスワードが間違っています")
+
+    elif choice == "サインアップ":
+        st.subheader("新しいアカウントを作成します")
+        new_user = st.text_input("ユーザー名を入力してください")
+        new_password = st.text_input("パスワードを入力してください", type='password')
+
+        if st.button("サインアップ"):
+            if check_user_exists(conn, new_user):
+                st.error("このユーザー名は既に使用されています。")
+            else:
+                try:
+                    add_user(conn, new_user, make_hashes(new_password))
+                    st.success("アカウントの作成に成功しました")
+                    st.info("ログイン画面からログインしてください")
+                except Exception as e:
+                    st.error(f"アカウントの作成に失敗しました: {e}")
+
+    elif choice == "オープンチャット":
+        st.subheader("オープンチャット画面")
+        display_chat(conn)  # Display the chat section
+
+    # コネクションを閉じる
+    conn.close()
+
+if __name__ == '__main__':
+    main()
